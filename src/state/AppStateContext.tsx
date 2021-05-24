@@ -1,5 +1,6 @@
-import { createContext, useContext, FC } from "react";
+import { createContext, Dispatch, useContext, useReducer, FC } from "react";
 import { appStateReducer, AppState, List, Task } from "./appStateReducer";
+import { Action } from "./actions";
 
 const appData: AppState = {
   lists: [
@@ -27,6 +28,7 @@ const appData: AppState = {
 type AppStateContextProps = {
   lists: List[];
   getTasksByListId(id: string): Task[];
+  dispatch: Dispatch<Action>;
 };
 
 /* create the context, specifying it must have the above props */
@@ -40,14 +42,16 @@ const AppStateContext = createContext<AppStateContextProps>(
 /* FC is a generic type, so if we want other props along with children, we can pass them
 to FC<> and then access them in our function, by default FC is FC<P={}> */
 export const AppStateProvider: FC = ({ children }) => {
-  const { lists } = appData;
+  const [state, dispatch] = useReducer(appStateReducer, appData);
+
+  const { lists } = state;
 
   const getTasksByListId = (id: string) => {
     return lists.find((list) => list.id === id)?.tasks || [];
   };
 
   return (
-    <AppStateContext.Provider value={{ lists, getTasksByListId }}>
+    <AppStateContext.Provider value={{ lists, getTasksByListId, dispatch }}>
       {children}
     </AppStateContext.Provider>
   );
