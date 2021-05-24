@@ -1,4 +1,5 @@
-import { createContext, Dispatch, useContext, useReducer, FC } from "react";
+import { useImmerReducer } from "use-immer";
+import { createContext, Dispatch, useContext, FC } from "react";
 import { appStateReducer, AppState, List, Task } from "./appStateReducer";
 import { Action } from "./actions";
 
@@ -42,7 +43,7 @@ const AppStateContext = createContext<AppStateContextProps>(
 /* FC is a generic type, so if we want other props along with children, we can pass them
 to FC<> and then access them in our function, by default FC is FC<P={}> */
 export const AppStateProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(appStateReducer, appData);
+  const [state, dispatch] = useImmerReducer(appStateReducer, appData);
 
   const { lists } = state;
 
