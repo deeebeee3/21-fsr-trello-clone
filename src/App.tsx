@@ -3,9 +3,10 @@ import { AppContainer } from "./styles";
 import { AddNewItem } from "./AddNewItem";
 
 import { useAppState } from "./state/AppStateContext";
+import { addList } from "./state/actions";
 
 export const App = () => {
-  const { lists } = useAppState();
+  const { lists, dispatch } = useAppState();
 
   return (
     <AppContainer>
@@ -14,7 +15,7 @@ export const App = () => {
       ))}
       <AddNewItem
         toggleButtonText="+ Add another list"
-        onAdd={console.log}
+        onAdd={(text) => dispatch(addList(text))}
         dark={false}
       />
     </AppContainer>
