@@ -6,6 +6,13 @@ export type Action =
   | {
       type: "ADD_TASK";
       payload: { text: string; listId: string };
+    }
+  | {
+      type: "MOVE_LIST";
+      payload: {
+        draggedId: string;
+        hoverId: string;
+      };
     };
 
 /* 

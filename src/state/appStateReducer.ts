@@ -25,6 +25,13 @@ export const appStateReducer = (
       draft.lists[targetListIndex].tasks.push({ id: nanoid(), text });
       break;
     }
+    case "MOVE_LIST": {
+      const { draggedId, hoverId } = action.payload;
+      const dragIndex = findItemIndexById(draft.lists, draggedId);
+      const hoverIndex = findItemIndexById(draft.lists, hoverId);
+      draft.lists = moveItem(draft.lists, dragIndex, hoverIndex);
+      break;
+    }
 
     default: {
       break;
@@ -36,3 +43,8 @@ export const appStateReducer = (
 automatically. Immer allows us to modify a draft copy of state, so it appears as
 though we are mutating state directly - but we are not. Once we've modified our draft
 immer will create a new copy of state */
+
+/* "MOVE_LIST": take the draggedId and the hoverId from the action payload. Then we calculate the 
+indices of the dragged and the hovered columns. And then we override the draft.lists 
+value with the result of the moveItem function, which takes the source array, and two 
+indices that it swaps. */
