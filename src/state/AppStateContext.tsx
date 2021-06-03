@@ -2,8 +2,10 @@ import { useImmerReducer } from "use-immer";
 import { createContext, Dispatch, useContext, FC } from "react";
 import { appStateReducer, AppState, List, Task } from "./appStateReducer";
 import { Action } from "./actions";
+import { DragItem } from "../DragItem";
 
 const appData: AppState = {
+  draggedItem: null,
   lists: [
     {
       id: "0",
@@ -27,6 +29,7 @@ const appData: AppState = {
 
 /* these are the properties that our context must have */
 type AppStateContextProps = {
+  draggedItem: DragItem | null;
   lists: List[];
   getTasksByListId(id: string): Task[];
   dispatch: Dispatch<Action>;
@@ -45,14 +48,16 @@ to FC<> and then access them in our function, by default FC is FC<P={}> */
 export const AppStateProvider: FC = ({ children }) => {
   const [state, dispatch] = useImmerReducer(appStateReducer, appData);
 
-  const { lists } = state;
+  const { draggedItem, lists } = state;
 
   const getTasksByListId = (id: string) => {
     return lists.find((list) => list.id === id)?.tasks || [];
   };
 
   return (
-    <AppStateContext.Provider value={{ lists, getTasksByListId, dispatch }}>
+    <AppStateContext.Provider
+      value={{ draggedItem, lists, getTasksByListId, dispatch }}
+    >
       {children}
     </AppStateContext.Provider>
   );
