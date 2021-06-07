@@ -57,6 +57,14 @@ export const addTask = (text: string, listId: string): Action => ({
   },
 });
 
+export const moveList = (draggedId: string, hoverId: string): Action => ({
+  type: "MOVE_LIST",
+  payload: {
+    draggedId,
+    hoverId,
+  },
+});
+
 export const setDraggedItem = (draggedItem: DragItem | null): Action => ({
   type: "SET_DRAGGED_ITEM",
   payload: draggedItem,
