@@ -5,6 +5,15 @@ import { Action } from "./actions";
 import { DragItem } from "../DragItem";
 import { save } from "../api";
 
+import { withInitialState } from "../withInitialState";
+
+/* Here we define the children prop as a required field to make it clear that the
+AppStateProvider is supposed to wrap other components. */
+type AppStateProviderProps = {
+  children: React.ReactNode;
+  initialState: AppState;
+};
+
 const appData: AppState = {
   draggedItem: null,
   lists: [
@@ -46,27 +55,30 @@ const AppStateContext = createContext<AppStateContextProps>(
 /* FC type defines that our function can have children as a prop */
 /* FC is a generic type, so if we want other props along with children, we can pass them
 to FC<> and then access them in our function, by default FC is FC<P={}> */
-export const AppStateProvider: FC = ({ children }) => {
-  const [state, dispatch] = useImmerReducer(appStateReducer, appData);
 
-  const { draggedItem, lists } = state;
+export const AppStateProvider = withInitialState<AppStateProviderProps>(
+  ({ children }) => {
+    const [state, dispatch] = useImmerReducer(appStateReducer, appData);
 
-  const getTasksByListId = (id: string) => {
-    return lists.find((list) => list.id === id)?.tasks || [];
-  };
+    const { draggedItem, lists } = state;
 
-  useEffect(() => {
-    save(state);
-  }, [state]);
+    const getTasksByListId = (id: string) => {
+      return lists.find((list) => list.id === id)?.tasks || [];
+    };
 
-  return (
-    <AppStateContext.Provider
-      value={{ draggedItem, lists, getTasksByListId, dispatch }}
-    >
-      {children}
-    </AppStateContext.Provider>
-  );
-};
+    useEffect(() => {
+      save(state);
+    }, [state]);
+
+    return (
+      <AppStateContext.Provider
+        value={{ draggedItem, lists, getTasksByListId, dispatch }}
+      >
+        {children}
+      </AppStateContext.Provider>
+    );
+  }
+);
 
 /* custom hook to make it easier to access application state from consuming components */
 /* saves us from having to import useContext hook and AppStateContext in every 
