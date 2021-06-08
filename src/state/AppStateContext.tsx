@@ -14,7 +14,7 @@ type AppStateProviderProps = {
   initialState: AppState;
 };
 
-const appData: AppState = {
+/* const appData: AppState = {
   draggedItem: null,
   lists: [
     {
@@ -33,7 +33,7 @@ const appData: AppState = {
       tasks: [{ id: "c2", text: "Begin to use static typing" }],
     },
   ],
-};
+}; */
 
 /* Application Context section below */
 
@@ -57,8 +57,8 @@ const AppStateContext = createContext<AppStateContextProps>(
 to FC<> and then access them in our function, by default FC is FC<P={}> */
 
 export const AppStateProvider = withInitialState<AppStateProviderProps>(
-  ({ children }) => {
-    const [state, dispatch] = useImmerReducer(appStateReducer, appData);
+  ({ children, initialState }) => {
+    const [state, dispatch] = useImmerReducer(appStateReducer, initialState);
 
     const { draggedItem, lists } = state;
 
