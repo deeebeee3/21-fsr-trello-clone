@@ -1,5 +1,6 @@
 import { useState, useEffect, ComponentType } from "react";
 import { AppState } from "./state/appStateReducer";
+import { load } from "./api";
 
 type InjectedProps = { initialState: AppState };
 
@@ -15,14 +16,37 @@ export function withInitialState<TProps>(
       lists: [],
       draggedItem: null,
     });
-    // ...
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | undefined>();
+
+    useEffect(() => {
+      const fetchInitialState = async () => {
+        try {
+          const data = await load();
+          setInitialState(data);
+        } catch (e) {
+          setError(e);
+        }
+        setIsLoading(false);
+      };
+      fetchInitialState();
+    }, []);
+
+    if (isLoading) {
+      return <div>Loading</div>;
+    }
+    if (error) {
+      return <div>{error.message}</div>;
+    }
+
     return <WrappedComponent {...props} initialState={initialState} />;
   };
 }
 
 /* THE WHOLE POINT OF THIS.... we want our WrappedComponent to have the the original TProps 
 it was passed, and we also want it to have the InjectedProps... which is why we are doing the 
-union in the first place:
+type intersection in the first place:
 
 WrappedComponent: ComponentType<PropsWithoutInjected<TProps> & InjectedProps>
 
@@ -37,5 +61,8 @@ to remove "initialState if it was a prop in TProp...
 
 MAKE SENSE???
 
+---
 
+An intersection type combines multiple types into one (AND).
+A union type describes a value that can be one of several types (OR).
 */
